@@ -28,8 +28,8 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ vars.ECR_REPO_BACKEND }}        
-        IMAGE_TAG: ${{ github.sha }}
+        ECR_REPOSITORY: ${{ vars.ECR_REPO }}        
+        IMAGE_TAG: latest
 
         
       run: |
@@ -46,14 +46,14 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
       with:
-        task-definition: ${{ vars.ECS_TASK_DEFINITION_BACKEND }}
-        container-name: ${{ vars.CONTAINER_NAME_BACKEND }}
+        task-definition: ${{ vars.ECS_TASK_DEFINITION_FILE }}
+        container-name: ${{ vars.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ vars.ECS_SERVICE_BACKEND }}
-        cluster: ${{ vars.ECS_CLUSTER_BACKEND }}
+        service: ${{ vars.ECS_SERVICE }}
+        cluster: ${{ vars.ECS_CLUSTER }}
         wait-for-service-stability: true
